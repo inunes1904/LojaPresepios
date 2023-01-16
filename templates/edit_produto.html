@@ -1,0 +1,50 @@
+<!--Modelo em Jinja2 que é uma extensão do HTML "_main.html" e que define um bloco de conteúdo. Dentro do bloco de 
+    conteúdo, existe uma série de elementos HTML que formam o formulário para editar um produto. O formulário tem
+    campos para o nome, descrição, unidades, preço e imagem do produto, e os valores atuais do produto são exibidos
+    nos campos. Há também um botão para cancelar a edição e outro para enviar as alterações.-->
+{% extends '_main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Adicionar Produto</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Preencha o formulário</h6>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('edit_produto', id=produto['id']) }}" method="POST">
+                <div class="form-group">
+                    <label>Nome:</label>
+                    <input type="text" id="nome_produto" name="nome_produto" placeholder="Nome" value="{{ produto['nome'] }}" class="form-control" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Descricao:</label>
+                    <textarea id="descricao_produto" name="descricao_produto" placeholder="Descreve o produto aqui" class="form-control"  id="floatingTextarea">{{ produto['descricao'] }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Unidades:</label>
+                    <input type="text" id="unidades_produto" name="unidades_produto" value="{{ produto['unidades'] }}" class="form-control" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Preco:</label>
+                    <input type="text" id="preco_produto" name="preco_produto" value="{{ produto['preco'] }}" class="form-control" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Imagem:</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                      <input type="file" name="file" value="{{ produto['imagem'] }}" placeholder="" class="custom-file-input" id="inputGroupFile04">
+                      <label class="custom-file-label" for="inputGroupFile04">{{ produto['imagem'].split('/')[2] }}</label>
+                    </div>
+                </div>
+                </div>
+                <a href="{{url_for('admin')}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Atualizar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock content %}

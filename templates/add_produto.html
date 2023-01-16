@@ -1,0 +1,51 @@
+<!--HTML com um formulário para adicionar um produto à Loja de Presépios. O formulário inclui campos para
+    preencher o nome, descrição, quantidade, preço e imagem do produto. Quando o formulário é submetido, os 
+    dados são enviados para o servidor através de uma solicitação POST e o produto é adicionado à loja. Há 
+    também botões para cancelar a adição do produto ou para confirmá-la.-->
+{% extends '_main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Adicionar Produto</h1>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Preencha o formulário</h6>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('add_produto') }}" method="POST" enctype = "multipart/form-data">
+                <div class="form-group">
+                    <label>Nome:</label>
+                    <input type="text" id="nome_produto" name="nome_produto" placeholder="Nome" class="form-control" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Descricao:</label>
+                    <textarea id="descricao_produto" name="descricao_produto"  class="form-control" placeholder="Descreve o produto aqui" id="floatingTextarea"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Unidades:</label>
+                    <input type="text" id="unidades_produto" name="unidades_produto" class="form-control" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Preco:</label>
+                    <input type="text" id="preco_produto" name="preco_produto" class="form-control" placeholder="">
+                </div>
+                <div class="form-group">
+                    <label>Imagem:</label>
+                <div class="input-group">
+                    <div class="custom-file">
+                      <input type="file" name="file" class="custom-file-input" id="inputGroupFile04">
+                      <label class="custom-file-label" for="inputGroupFile04">Escolher Ficheiro</label>
+                    </div>
+                </div>
+                </div>
+                <a href="{{url_for('admin')}}" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Adicionar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock content %}

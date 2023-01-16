@@ -1,0 +1,142 @@
+<!--Código em Django que é uma extensão do HTML "_base_index.html" e que adiciona um bloco de conteúdo. Dentro desse bloco,
+   existe um código HTML para criar o cabeçalho de navegação para o site, com links para diferentes páginas e opções de login.
+    Também existe uma seção de serviços e um rodapé. Existem algumas estruturas de controlo de fluxo, como loops e condicionais,
+     que exibem diferentes links de acordo com o estado de login do utilizador e a sua função (se for um administrador ou não).
+      Existe também alguns flashes de mensagens que podem ser exibidos na página.-->
+{% extends '_base_index.html' %}
+{% block content %}
+    <div class="page-holder">
+      <!-- navbar-->
+      <header class="header bg-white">
+        <div class="container px-lg-3">
+          <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+            <a class="navbar-brand" href="#"
+              ><span class="fw-bold text-uppercase text-dark"
+                >Loja de Presépios</span
+              ></a
+            >
+            <button
+              class="navbar-toggler navbar-toggler-end"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="{{ url_for('index') }}"
+                    >Início</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="{{ url_for('store') }}">Loja</a>
+                </li>
+                {% if session['funcao'] == 'Admin'%}
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="{{ url_for('admin') }}"><i class="fa-solid fa-lock"></i> ADM</a>
+                </li>
+                {% endif %}
+                  </div>
+                </li>
+              </ul>
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('cart') }}">
+                    <i class="fas fa-dolly-flatbed me-1 text-gray"></i
+                    >Carrinho<small class="text-gray fw-normal"> ({{items}})</small></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#!">
+                    <i class="far fa-heart me-1"></i
+                    ><small class="text-gray fw-normal"> (0)</small></a
+                  >
+                </li>
+               
+                {% if not session %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('login')}}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>Iniciar
+                    Sessão</a
+                  >
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link active" href="{{ url_for('profile', id=session['id'] ) }}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>{{session['nome'].title()}}
+                    </a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fa-solid text-gray fa-arrow-right-from-bracket"></i> Sair
+                    </a
+                  >
+                </li>
+                {% endif %}
+
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <!--  Modal -->
+     
+           
+        </section>
+        <!-- SERVICES-->
+        <div style="padding-top:20px;">
+            {% if get_flashed_messages() %}
+              {% for message in get_flashed_messages() %}
+              {% if 'sucesso' in message  %}
+                  <div  class=" alert alert-success"> 
+                      <i class="close icon alert-success" icon onclick="delete_flash(this)" >×&emsp;</i>  
+              {% else %}
+                  <div  class="alert alert-danger"> 
+                      <i class="close icon alert-danger" icon onclick="delete_flash(this)" >×&emsp;</i>  
+              {% endif %}  
+              
+              {{ message }}
+              </div>
+              {% endfor %}
+            {% endif %}
+            </div> 
+            
+        <section class="py-5 bg-light">
+         <div style="margin: 50px 350px 100px 350px;">
+            <h2>Quem somos</h2>
+            <br>
+            <hr>
+            <p style="font-size:1.2rem;">
+              A nossa página “Loja Presépios” partiu do nosso gosto, desde crianças, de 
+              construir o presépio sempre que o Natal se avizinhava. A cada novo Natal 
+              era como se fossemos a mesma criança que executa a tarefa pela primeira vez.
+            </p>
+            <p style="font-size:1.2rem;">
+              Com o passar dos anos, a nossa vontade em querer tornar o nosso presépio mais especial, 
+              fez com que fossemos melhorando e inovando a nossa construção. Verificámos que existiam mais
+               pessoas que tinham o mesmo gosto e fascínio que nós na construção de presépios e que 
+               nos mostraram novas ideias, algumas que decidimos aplicar nos nossos “projetos” pessoais.
+            </p>
+            <p style="font-size:1.2rem;">
+              No meio de toda esta criatividade surgiu a ideia de criar esta página, disponível 24h
+              por dia, e mostrarmos o nosso trabalho ao mundo. Na nossa página encontrará uma 
+              diversidade de presépios, desde os mais “tradicionais” aos mais “modernos”, 
+              abrangendo assim um público-alvo mais vasto.
+            </p>
+            <p style="font-size:1.2rem;">
+              O nosso objetivo ao visitarem a nossa página é que sintam o espírito natalício, 
+              tal como nós o sentimos, e que se deixem inspirar pelos presépios que aqui 
+              encontrarem. Caso fiquem indecisos, poderão consultar as reviews de cada um dos 
+              produtos e tomar a decisão certa e levar assim o presépio que tanto procuravam.
+            </p>
+        </div>
+
+        </section>
+        <!-- NEWSLETTER-->
+{% endblock content %}

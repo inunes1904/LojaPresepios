@@ -1,0 +1,92 @@
+<!--  Página 404 Error -->
+{% extends '_base_index.html' %}
+{% block content %}
+<div class="page-holder">
+    <header class="header bg-white">
+      <div class="container px-lg-3">
+        <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+          <a class="navbar-brand" href="#"
+            ><span class="fw-bold text-uppercase text-dark"
+              >Loja de Presépios</span
+            ></a
+          >
+          <button
+            class="navbar-toggler navbar-toggler-end"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <!-- Link--><a class="nav-link" href="{{ url_for('index') }}"
+                  >Início</a
+                >
+              </li>
+              <li class="nav-item">
+                <!-- Link--><a class="nav-link" href="{{ url_for('store') }}">Loja</a>
+              </li>
+            
+              
+                </div>
+              </li>
+            </ul>
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('cart') }}">
+                  <i class="fas fa-dolly-flatbed me-1 text-gray"></i
+                  >Carrinho<small class="text-gray fw-normal"> (0)</small></a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#!">
+                  <i class="far fa-heart me-1"></i
+                  ><small class="text-gray fw-normal"> (0)</small></a
+                >
+              </li>
+              {% if not session['id'] %}
+              <li class="nav-item">
+                <a class="nav-link" href="#!">
+                  <i class="fas fa-user me-1 text-gray fw-normal"></i>Iniciar
+                  Sessão</a
+                >
+              </li>
+              {% else %}
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('profile', id=session['id'] ) }}">
+                  <i class="fas fa-user me-1 text-gray fw-normal"></i>{{session['nome'].title()}}
+                  </a
+                >
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('logout') }}">
+                  <i class="fa-solid text-gray fa-arrow-right-from-bracket"></i> Sair
+                  </a
+                >
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </header>
+<div class="container-fluid" > 
+  <!-- Exibe uma mensagem de erro "Página não encontrada" e um botão para levar o utilizador de volta à página inicial "index.html". -->
+    <div class="text-center" style="padding-top:50px; padding-bottom:60px;" >
+        <div class="error mx-auto" data-text="404">
+            404
+        </div>
+        <p class="lead text-gray-800 mb-5">Página não econtrada</p>
+        
+        <p class="text-gray-500 mb-0">A página que procura não existe...</p>
+        <a href="{{ url_for('index') }}">← Voltar</a>
+        <br>
+        <img style=" height: auto; width: 55%;" src="{{url_for('static', filename='loja/img/presepio_semjesus.png')}}">
+    </div>
+</div>
+{% endblock content %}

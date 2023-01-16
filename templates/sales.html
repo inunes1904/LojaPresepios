@@ -1,0 +1,294 @@
+<!-- Dashboard de Vendas -->
+{% extends '_main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Vendas</h1>
+<!-- Elemento de seleção (select) que permite ao utilizador escolher o ano desejado. 
+Quando o usuário seleciona um ano e clica em enviar (submit), o formulário é enviado para a rota 'adminsales' 
+com o ano escolhido no parâmetro 'anoAtual', criadno o dashboard-->
+<form action="{{url_for('adminsales')}}" method="GET" >
+    <div style=" padding-bottom: 10px;">
+    <select class="form-select btn btn-primary" id="anoAtual" name="anoAtual" onchange="this.form.submit()"  aria-label="Default select example">
+        <option selected>Escolha o ano</option>
+        <option value="2022">2022</option>
+        <option value="2023">2023</option>
+    </select>
+    </div>
+</form>
+<!-- Criação dos cards através do bootstrap sobre as vendas realizadas no ano escolhido na dropbox acima.
+Média de vendas por mês, total de vendas anuais, mês com o maior numero de vendas, do próprio dia e por ano, Top3 e Vendas Ano
+através de queries à base dados existentes no "sales_chart.py" -->
+<div class="row">    
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-primary shadow h-100 py-2">
+      <div class="card-body">
+          <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                      Média de Vendas (Mês)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{media}} €</div>
+              </div>
+              <div class="col-auto">
+                  <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-dark shadow h-100 py-2">
+    <div class="card-body">
+        <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">
+                    Vendas (Anual)</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{total}} €</div>
+            </div>
+            <div class="col-auto">
+                <i class="fa-solid fa-chart-simple fa-2x text-gray-300"></i>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-xl-3 col-md-6 mb-4">
+  <div class="card border-left-primary shadow h-100 py-2">
+      <div class="card-body">
+          <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                      Melhor Mês</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{top_mes}}</div>
+              </div>
+              <div class="col-auto">
+                  <i class="fa-solid fa-star fa-2x text-gray-300"></i>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="col-xl-3 col-md-6 mb-4">
+    <div class="card border-left-danger shadow h-100 py-2">
+      <div class="card-body">
+          <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                      Vendas (Hoje)</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">{{hoje}} €</div>
+              </div>
+              <div class="col-auto">
+                  <i class="fa-solid fa-calendar-week fa-2x text-gray-300"></i>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Vendas Ano</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-area">
+                    <div class="chartjs-size-monitor">
+                        <div class="chartjs-size-monitor-expand">
+                            <div class="">
+                            </div>
+                        </div>
+                        <div class="chartjs-size-monitor-shrink">
+                            <div class="">
+                            </div>
+                        </div>
+                    </div>
+                    <canvas id="lineChart" style="display: block; height: 320px; width: 1039px;" width="2078" height="640" class="chartjs-render-monitor"></canvas>
+                </div>
+
+            </div>
+          </div>
+    </div>
+    <div class="col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Top 3 Meses</h6>
+            </div>
+            <div class="card-body">
+                <div class="chart-pie pt-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                    <canvas id="donutChart" width="972" height="506" style="display: block; height: 253px; width: 486px;" class="chartjs-render-monitor"></canvas>
+                </div>
+                <hr>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Mais Vendidos</h6>
+            </div>
+            <div class="card-body">
+              <!-- Construção da tabela com as seguintes colunas: 
+                "Produto" (com uma imagem do produto)
+                "Nome" (do produto)
+                "Preço"
+                "Vendido" (quantidade de unidades vendidas)
+                "Receita" (total de dinheiro arrecadado com a venda desse produto)
+                A tabela é preenchida com os dados do produto usando um loop "for" que percorre a lista "mais_vendidos". 
+                Cada linha da tabela representa um produto dessa lista. -->
+                <table class="container">
+                    <thead>
+                      <tr>
+                        <th scope="col">Produto</th>
+                        <th scope="col">Nome</th>
+                        <th scope="col">Preço</th>
+                        <th scope="col">Vendido</th>
+                        <th scope="col">Receita</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for produto in mais_vendidos %}
+                      <tr>
+                        <th scope="row">
+                        <a href="#">
+                        <img style="height:72px; width:72px; border-radius: 15%;" src="{{url_for('static', filename=produto[0])}}" alt=""></a></th>
+                        <td><a href="#" class="text-primary fw-bold">{{produto[1]}}</a></td>
+                        <td>{{produto[3]}} €</td>
+                        <td class="fw-bold">{{produto[2]}} <small>un</small></td>
+                        <td>{{produto[4]}} €</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+        </div>
+    </div>
+
+     <!-- Criação de um gráfico de barras que demonstra as encomendas realizadas num determinado ano. 
+      O gráfico é gerado com a ferramenta Chart.js e exibe a quantidade de encomendas por mês. 
+      A informação é obtida através de uma consulta aos dados de encomendas armazenados na base de dados.
+      O gráfico é exibido num elemento canvas na página HTML. -->
+     <div class="col-xl-8">
+     <div class="card  shadow mb-4 ">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Encomendas Ano</h6>
+        </div>
+        <div class="card-body">
+            <div class="chart-bar"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
+                <canvas id="barChart" width="2078" height="640" style="display: block; height: 320px; width: 1039px;" class="chartjs-render-monitor"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<!-- Opção de fechar a mensagem de alerta através do "X"-->
+<script>
+    function delete_flash(flash){
+        $(flash).parent().remove()
+    }
+</script>
+
+<!-- Criar gráficos usando a biblioteca Chart.js.
+Cada gráfico tem seus próprios dados e labels específicos, que são passados para o gráfico através de uma variável do Flask como um template string.
+Todos os gráficos são renderizados quando o conteúdo da página é carregado, usando o evento DOMContentLoaded -->
+
+
+<!-- Gráfico de linhas -->
+<script>
+  
+    document.addEventListener("DOMContentLoaded", () => {
+      new Chart(document.querySelector('#lineChart'), {
+        type: 'line',
+        data: {
+          labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 
+                    'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+          datasets: [{
+            label: 'Vendas €',
+            data: {{ vendas_line }},
+            fill: false,
+            borderColor: 'rgb(153, 0, 0)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+
+<!-- Gráfico circular (Pie Chart) -->
+<script>
+var nomes = '{{top3_nomes}}'
+var lista_nomes = nomes.split(' ');
+console.log(nomes)
+    document.addEventListener("DOMContentLoaded", () => {
+      new Chart(document.querySelector('#donutChart'), {
+        type: 'pie',
+        data: {
+          labels: lista_nomes,
+          datasets: [{
+            data: {{ top3 }} ,
+            fill: false,
+            backgroundColor:['rgba(153, 0, 0, 0.7)','rgba(153, 0, 0, 0.5)','rgba(153, 0, 0, 0.2)'],
+            borderColor: 'rgb(153, 0, 0)',
+            tension: 0.1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+</script>
+
+<!-- Gráfico Barras -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      new Chart(document.querySelector('#barChart'), {
+        type: 'bar',
+        data: {
+          labels: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 
+                    'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+          datasets: [{
+            label: 'Encomendas Quantidade',
+            data: {{ enc }} ,
+            fill: false,
+            backgroundColor:'rgba(153, 0, 0, 0.7)',
+            borderColor: 'rgb(153, 0, 0)',
+            tension: 0
+          }]
+        },
+        options: {
+            
+            scales: {
+                xAxes: [{
+                ticks: {
+                    precision: 0
+                }
+                }],
+                yAxes: [{
+                ticks: {
+                    precision: 0
+                }
+                }]
+  }
+        
+        }
+      });
+    });
+  </script>
+{% endblock content %}

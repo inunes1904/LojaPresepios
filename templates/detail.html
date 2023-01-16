@@ -1,0 +1,553 @@
+<!--Extensão do HTML "base_index.html". Existe um bloco de conteúdo no qual são incluídos dois scripts, um para o 
+  jQuery e outro para um script específico chamado "rating.js". Em seguida, há um elemento div com a classe "page-holder 
+  bg-light" que contém o cabeçalho. O cabeçalho tem uma navbar com links para a página inicial, a da loja e a área de 
+  administração (se o utilizador atual tiver a função "Admin"). Também existe link para o carrinho de compras, opções 
+  de login e perfil para o utilizador atualmente logado. Depois disso, há um loop que exibe os produtos com a classificação 
+  "estrela", um formulário de classificação e um botão de compra para cada produto.
+De seguida, é criada uma estrutura de divisões com classificação de colunas e linhas. Existe também referência ao recurso 
+"swiper", que é uma biblioteca JavaScript, que permite que os utilizadores deslizem para ver várias imagens. As imagens são 
+carregadas a partir de um arquivo estático usando o método "url_for" do Python e exibidas em tamanhos específicos. Há também 
+um elemento "glightbox" que é uma biblioteca que permite que os utilizadores vejam as imagens num modo de visualização ampliada.
+De seguida, são exibidos os detalhes de um produto, incluindo o nome, preço, descrição e imagem do mesmo. Existe uma seção 
+de avaliações do produto, onde é exibida uma série de estrelas para avaliar o produto. Existe um formulário de adição ao 
+carrinho de compras. Além disso, existe uma seção de guia que permite aos utilizadores alternar entre uma descrição e uma 
+seção de avaliações do produto.
+Depois, é exibido um conjunto de produtos relacionados a um produto específico. Cada produto é exibido com uma imagem, nome,
+ preço e uma série de botões que permitem aos utilizadores adicionar o produto ao carrinho de compras ou visualizá-lo numa 
+ visualização ampliada. Cada produto também tem um link que leva os utilizadores a uma página de detalhes do produto.-->
+{% extends '_base_index.html' %} {% block content %}
+<script
+  src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+  integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+  crossorigin="anonymous"
+></script>
+<script
+  type="text/javascript"
+  src="{{ url_for('static', filename='loja/js/rating.js')}}"
+></script>
+<div class="page-holder bg-light">
+  <!-- navbar-->
+  <header class="header bg-white">
+    <div class="container px-lg-3">
+      <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+        <a class="navbar-brand" href="#"
+          ><span class="fw-bold text-uppercase text-dark"
+            >Loja de Presépios</span
+          ></a
+        >
+        <button
+          class="navbar-toggler navbar-toggler-end"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <!-- Link--><a class="nav-link" href="{{ url_for('index') }}"
+                >Início</a
+              >
+            </li>
+            <li class="nav-item">
+              <!-- Link--><a class="nav-link" href="{{ url_for('store') }}"
+                >Loja</a
+              >
+            </li>
+            {% if session['funcao'] == 'Admin'%}
+            <li class="nav-item">
+              <!-- Link--><a class="nav-link" href="{{ url_for('admin') }}"
+                ><i class="fa-solid fa-lock"></i> ADM</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('cart') }}">
+                <i class="fas fa-dolly-flatbed me-1 text-gray"></i
+                >Carrinho<small class="text-gray fw-normal">
+                  ({{items}})</small
+                ></a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#!">
+                <i class="far fa-heart me-1"></i
+                ><small class="text-gray fw-normal"> (0)</small></a
+              >
+            </li>
+
+            {% if not session %}
+            <li class="nav-item">
+              <a class="nav-link" href="{{url_for('login')}}">
+                <i class="fas fa-user me-1 text-gray fw-normal"></i>Iniciar
+                Sessão</a
+              >
+            </li>
+            {% else %}
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{{ url_for('profile', id=session['id'] ) }}"
+              >
+                <i class="fas fa-user me-1 text-gray fw-normal"></i
+                >{{session['nome'].title()}}
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('logout') }}">
+                <i class="fa-solid text-gray fa-arrow-right-from-bracket"></i>
+                Sair
+              </a>
+            </li>
+            {% endif %}
+          </ul>
+        </div>
+      </nav>
+    </div>
+  </header>
+  <!--  Modal -->
+  {% for produto in produtos_top4 %}
+  <div class="modal fade" id="Modal{{produto['id']}}" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content overflow-hidden border-0">
+        <button
+          class="btn-close p-4 position-absolute top-0 end-0 z-index-20 shadow-0"
+          type="button"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+        <div class="modal-body p-0">
+          <div class="row align-items-stretch">
+            <div class="col-lg-6 p-lg-0">
+              <a
+                class="glightbox product-view d-block h-100 bg-cover bg-center"
+                style="background: url( /static/{{ produto['imagem'] }} ) "
+                href="{{ url_for('static', filename=produto['imagem'] )}}"
+              ></a>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="p-4 my-md-4">
+                <h2 class="h4">{{produto['nome']}}</h2>
+                <p class="text-muted">{{produto['preco']}} €</p>
+                <p class="text-sm mb-4">{{produto['descricao']}}</p>
+                <div class="row align-items-stretch mb-4 gx-0">
+                  <div class="col-sm-5">
+                    <button
+                      class="btn btn-dark btn-m w-100 h-100 d-flex align-items-center justify-content-center px-0 atualizar-carrinho"
+                      data-produto="{{ produto['id'] }}"
+                      data-acao="adicionar"
+                    >
+                      <i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Carrinho
+                    </button>
+                  </div>
+                </div>
+                <a
+                  class="btn btn-link text-dark text-decoration-none p-0"
+                  href="#!"
+                  ><i class="far fa-heart me-2"></i>Adicionar aos Favoritos</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <section class="py-5">
+    <div class="container">
+      <div class="row mb-5">
+        <div class="col-lg-6">
+          <!-- PRODUCT SLIDER-->
+          <div class="row m-sm-0">
+            <div
+              class="col-sm-2 p-sm-0 order-2 order-sm-1 mt-2 mt-sm-0 px-xl-2"
+            >
+              <div class="swiper product-slider-thumbs">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide h-auto swiper-thumb-item mb-3">
+                    <img
+                      style="width: 100px; height: 100px"
+                      src="{{ url_for('static', filename=produto['imagem'])}}"
+                      alt="..."
+                    />
+                  </div>
+                  <div class="swiper-slide h-auto swiper-thumb-item mb-3">
+                    <img
+                      style="width: 100px; height: 100px"
+                      src="{{ url_for('static', filename=produto['imagem'])}}"
+                      alt="..."
+                    />
+                  </div>
+                  <div class="swiper-slide h-auto swiper-thumb-item mb-3">
+                    <img
+                      style="width: 100px; height: 100px"
+                      src="{{ url_for('static', filename=produto['imagem'])}}"
+                      alt="..."
+                    />
+                  </div>
+                  <div class="swiper-slide h-auto swiper-thumb-item mb-3">
+                    <img
+                      style="width: 100px; height: 100px"
+                      src="{{ url_for('static', filename=produto['imagem'])}}"
+                      alt="..."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-10 order-1 order-sm-2">
+              <div class="swiper product-slider">
+                <div class="swiper-wrapper">
+                  <div class="swiper-slide h-auto">
+                    <a
+                      class="glightbox product-view"
+                      href="{{ url_for('static', filename=produto['imagem'])}}"
+                      data-gallery="gallery2"
+                      data-glightbox="Product item 1"
+                      ><img
+                        style="width: 505px; height: 450px"
+                        class="img-fluid"
+                        src="{{ url_for('static', filename=produto['imagem'])}}"
+                        alt="..."
+                    /></a>
+                  </div>
+                  <div class="swiper-slide h-auto">
+                    <a
+                      class="glightbox product-view"
+                      href="{{ url_for('static', filename=produto['imagem'])}}"
+                      data-gallery="gallery2"
+                      data-glightbox="Product item 2"
+                      ><img
+                        style="width: 505px; height: 450px"
+                        class="img-fluid"
+                        src="{{ url_for('static', filename=produto['imagem'])}}"
+                        alt="..."
+                    /></a>
+                  </div>
+                  <div class="swiper-slide h-auto">
+                    <a
+                      class="glightbox product-view"
+                      href="{{ url_for('static', filename=produto['imagem'])}}"
+                      data-gallery="gallery2"
+                      data-glightbox="Product item 3"
+                      ><img
+                        style="width: 505px; height: 450px"
+                        class="img-fluid"
+                        src="{{ url_for('static', filename=produto['imagem'])}}"
+                        alt="..."
+                    /></a>
+                  </div>
+                  <div class="swiper-slide h-auto">
+                    <a
+                      class="glightbox product-view"
+                      href="{{ url_for('static', filename=produto['imagem'])}}"
+                      data-gallery="gallery2"
+                      data-glightbox="Product item 4"
+                      ><img
+                        style="width: 505px; height: 450px"
+                        class="img-fluid"
+                        src="{{ url_for('static', filename=produto['imagem'])}}"
+                        alt="..."
+                    /></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- PRODUCT DETAILS-->
+        <div class="col-lg-6">
+          {% if reviews %}
+          <ul class="list-inline mb-2 text-sm">
+            {% for i in range(total_rating_stars) %}
+            <li class="list-inline-item m-0">
+              <i class="fas fa-star small text-warning"></i>
+            </li>
+            {% endfor %} {% for i in range(total_rating_half_stars) %}
+            <li class="list-inline-item m-0 4">
+              <i class="fas fa-star-half-alt small text-warning"></i>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+          <h1>{{produto['nome']}}</h1>
+          <p class="text-muted lead">{{produto['preco']}} €</p>
+          <p class="text-sm mb-4">{{produto['descricao']}}</p>
+          <div class="row align-items-stretch mb-4">
+            <div class="col-sm-3 pl-sm-0">
+              <a
+                class="btn btn-dark btn-sm btn-block h-100 d-flex align-items-center justify-content-center px-0 atualizar-carrinho"
+                data-produto="{{produto['id']}}"
+                data-acao="adicionar"
+                ><i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Carrinho</a
+              >
+            </div>
+          </div>
+          <a class="text-dark p-0 mb-4 d-inline-block" href="#!"
+            ><i class="far fa-heart me-2"></i>Add to wish list</a
+          ><br />
+          <ul class="list-unstyled small d-inline-block">
+            <li class="px-3 py-2 mb-1 bg-white">
+              <strong class="text-uppercase">REF:</strong
+              ><span class="ms-2 text-muted">ITEM#000{{produto['id']}}</span>
+            </li>
+            <li class="px-3 py-2 mb-1 bg-white text-muted">
+              <strong class="text-uppercase text-dark">Categoria:</strong
+              ><a class="reset-anchor ms-2" href="#!">Presépios</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- DETAILS TABS-->
+      <ul class="nav nav-tabs border-0" id="myTab" role="tablist">
+        <li class="nav-item">
+          <a
+            class="nav-link text-uppercase active"
+            id="description-tab"
+            data-bs-toggle="tab"
+            href="#description"
+            role="tab"
+            aria-controls="description"
+            aria-selected="true"
+            >Descrição</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-uppercase"
+            id="reviews-tab"
+            data-bs-toggle="tab"
+            href="#reviews"
+            role="tab"
+            aria-controls="reviews"
+            aria-selected="false"
+            >Reviews</a
+          >
+        </li>
+      </ul>
+      <div class="tab-content mb-5" id="myTabContent">
+        <div
+          class="tab-pane fade show active"
+          id="description"
+          role="tabpanel"
+          aria-labelledby="description-tab"
+        >
+          <div class="p-4 p-lg-5 bg-white">
+            <h6 class="text-uppercase">Descrição do Produto</h6>
+            <p class="text-muted text-sm mb-0">{{ produto['descricao'] }}</p>
+          </div>
+        </div>
+        <div
+          class="tab-pane fade"
+          id="reviews"
+          role="tabpanel"
+          aria-labelledby="reviews-tab"
+        >
+          <div class="p-4 p-lg-5 bg-white">
+            <div class="row">
+              <div class="col-lg-8">
+                <!-- Reviews -->
+                {% if reviews %} {% for review in reviews %}
+                <div class="d-flex mb-3">
+                  <div class="flex-shrink-0">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <div class="ms-3 flex-shrink-1">
+                    <h6 class="mb-0 text-uppercase">{{review['nome']}}</h6>
+                    <p class="small text-muted mb-0 text-uppercase">
+                      {{review['comentario']}}
+                    </p>
+                    <ul class="list-inline mb-1 text-xs">
+                      {% for i in range( review['stars'] ) %}
+                      <li class="list-inline-item m-0">
+                        <i class="fas fa-star text-warning"></i>
+                      </li>
+                      {% endfor %} {% for i in range( review['half_stars'] ) %}
+                      <li class="list-inline-item m-0">
+                        <i class="fas fa-star-half-alt text-warning"></i>
+                      </li>
+                      {% endfor %}
+                    </ul>
+                    <p class="text-sm mb-0 text-muted">{{review['data']}}</p>
+                  </div>
+                </div>
+                {% endfor %} {% else %}
+                <p>Produto sem reviews</p>
+                {% endif %}
+                <hr />
+                <div class="ms-3 flex-shrink-1">
+                  {% if session['id'] %} {% if post %}
+                  <form
+                    action="{{ url_for('detail', id=produto['id'] ) }}"
+                    method="POST"
+                  >
+                    <div class="col-lg-12">
+                      <label
+                        class="form-label text-sm text-uppercase"
+                        for="address"
+                        >Pontuação
+                      </label>
+                      <div class="row">
+                        <div class="col-12 col-md-6" style="font-size: 1.3em">
+                          <small>
+                            <div id="halfstarsReview"></div>
+                          </small>
+                        </div>
+                        <div class="col-12 col-md-6" style="display: none">
+                          <label for="halfstarsInput text-warning">Stars</label>
+                          <input
+                            type="text"
+                            readonly
+                            id="halfstarsInput"
+                            name="halfstarsInput"
+                            class="form-control form-control-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-12">
+                      <label
+                        class="form-label text-sm text-uppercase"
+                        for="address"
+                        >Comentário</label
+                      >
+                      <input
+                        class="form-control form-control-lg"
+                        type="text"
+                        id="comentario"
+                        name="comentario"
+                        placeholder="Introduz aqui o teu comentário ao produto é importante para nós obrigado"
+                      />
+                    </div>
+
+                    <div class="col-lg-12 form-group" style="padding-top: 10px">
+                      <button class="btn btn-dark" type="submit">Enviar</button>
+                    </div>
+                  </form>
+                  {% endif %} {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- RELATED PRODUCTS-->
+      <h2 class="h5 text-uppercase mb-4">Produtos Relacionados</h2>
+      <div class="row">
+        <!-- PRODUCT-->
+        {% for prod in produtos_top4 %}
+        <div class="col-lg-3 col-sm-6">
+          <div class="product text-center skel-loader">
+            <div class="d-block mb-3 position-relative">
+              <a class="d-block" href="{{ url_for('detail', id=prod['id']) }}"
+                ><img
+                  style="width: 350px; height: 350px"
+                  class="img-fluid w-100"
+                  src="{{ url_for( 'static' , filename=prod['imagem'])}}"
+                  alt="..."
+              /></a>
+              <div class="product-overlay">
+                <ul class="mb-0 list-inline">
+                  <li class="list-inline-item m-0 p-0">
+                    <a class="btn btn-sm btn-outline-dark" href="#!"
+                      ><i class="far fa-heart"></i
+                    ></a>
+                  </li>
+                  <li class="list-inline-item m-0 p-0">
+                    <button
+                      class="btn btn-sm btn-dark atualizar-carrinho"
+                      data-produto="{{ prod['id'] }}"
+                      data-acao="adicionar"
+                    >
+                      <i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Carrinho
+                    </button>
+                  </li>
+                  <li class="list-inline-item mr-0">
+                    <a
+                      class="btn btn-sm btn-outline-dark"
+                      href="#Modal{{ prod['id'] }}"
+                      data-bs-toggle="modal"
+                      ><i class="fas fa-expand"></i
+                    ></a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <h6>
+              <a
+                class="reset-anchor"
+                href="{{ url_for('detail', id=prod['id']) }}"
+                >{{prod['nome']}}</a
+              >
+            </h6>
+            <p class="small text-muted">{{prod['preco']}} €</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!--Código JavaScript que configura as diferentes avaliações "estrelas" nos elementos HTML. Existem cinco avaliações, no formato estrela, 
+    diferentemente configuradas, cada uma com as suas próprias opções de personalização, como o número de estrelas, a cor e os ícones de estrela,
+     vazia e preenchida. Quando os utilizadores clicam numa estrela, uma função é chamada e o número de estrelas selecionado é registado num 
+     elemento de entrada HTML.-->
+  <script>
+    $("#review").rating({
+      value: 2,
+      click: function (e) {
+        console.log(e);
+        $("#starsInput").val(e.stars);
+      },
+    });
+
+    $("#10starsReview").rating({
+      stars: 10,
+      click: function (e) {
+        console.log(e);
+        $("#10starsInput").val(e.stars);
+      },
+    });
+
+    $("#customstarsReview").rating({
+      emptyStar: "far fa-play-circle",
+      filledStar: "fas fa-play-circle",
+      color: "#4c71ff",
+      click: function (e) {
+        console.log(e);
+        $("#customstarsInput").val(e.stars);
+      },
+    });
+
+    $("#halfstarsReview").rating({
+      half: true,
+      click: function (e) {
+        console.log(e);
+        $("#halfstarsInput").val(e.stars);
+      },
+    });
+
+    $("#unrealisticReview").rating({
+      value: 3,
+      stars: 7,
+      emptyStar: "far fa-arrow-alt-circle-left",
+      halfStar: "far fa-angry",
+      filledStar: "fas fa-arrow-alt-circle-right",
+      color: "#ff3ef9",
+      half: true,
+      click: function (e) {
+        console.log(e);
+        $("#unrealisticInput").val(e.stars);
+      },
+    });
+  </script>
+  {% endblock content %}
+</div>

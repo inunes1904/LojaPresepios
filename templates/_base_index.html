@@ -1,0 +1,192 @@
+<!--Estrutura e conteúdo da página web. O elemento <head> contém metadados sobre a página web, como o título da 
+  página, a codificação de caracteres e as configurações de visualização. Também inclui links para páginas externas 
+  e scripts, como jQuery e Font Awesome. O elemento <body> contém o conteúdo da página web, que não é mostrado 
+    neste código. O script no final define algumas variáveis com base nos valores dos cookies e variáveis de sessão 
+    do Flask, e configura uma função para obter o valor de um cookie específico. Esta página web utiliza o 
+    framework web Flask e o templating Jinja.-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Loja de Presépios | E-commerce</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="all,follow" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js" 
+    integrity="sha512-tWHlutFnuG0C6nQRlpvrEhE4QpkG1nn2MOUMWmUeRePl4e3Aki0VB6W1v3oLjFtd0hVOtRQ9PHpSfN6u6/QXkQ==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- gLightbox gallery-->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='loja/vendor/glightbox/css/glightbox.min.css') }}"
+    />
+    <!-- Range slider-->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='loja/vendor/nouislider/nouislider.min.css') }}"
+    />
+    <!-- Choices CSS-->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='loja/vendor/choices.js/public/assets/styles/choices.min.css') }}"
+    />
+    <!-- Swiper slider-->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='loja/vendor/swiper/swiper-bundle.min.css') }}"
+    />
+    <!-- Google fonts-->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;700&amp;display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;800&amp;display=swap"
+    />
+    <!-- theme stylesheet-->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='loja/css/style.red.css') }}"
+      id="theme-stylesheet"
+    />
+    <!-- Custom stylesheet - for your changes-->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='loja/css/custom.css') }}"
+    />
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='loja/img/favicon-32x32.png') }}" />
+    <!--Definição de duas variáveis, utilizador e utilizador_role, com os valores de duas chaves numa sessão do Flask. 
+      Em seguida, definimos uma função chamada getCookie que recebe um parâmetro nome e retorna o valor de um cookie
+       com esse nome, se ele existir. Depois, a variável carrinho é definida como o resultado da função getCookie, 
+       passando 'carrinho' como parâmetro. Se carrinho for igual a null, ele é redefinido como um objeto vazio e é 
+       criado um novo cookie com o nome 'carrinho' e o valor do carrinho. Por fim, o conteúdo do carrinho é exibido.-->
+    <script type="text/javascript">
+
+      var utilizador = '{{ session["email"] }}'
+      var utilizador_role = '{{ session["funcao"] }}' 
+
+      function getCookie(nome){
+        var cookieArray = document.cookie.split(";")
+
+        for(var i=0; i < cookieArray.length; i++){
+          var cookiePar = cookieArray[i].split("=")
+          if(nome == cookiePar[0].trim()){
+            return decodeURIComponent(cookiePar[1]);
+          }
+        }
+        return null;
+      }
+      var carrinho = JSON.parse(getCookie('carrinho'))
+
+      if (carrinho == null){
+        carrinho = {}
+        console.log('Carrinho criado')
+        document.cookie = 'carrinho='+ JSON.stringify(carrinho) + ";domain=;path=/"
+      }
+      console.log('Carrinho:', carrinho)
+   </script>
+  </head>
+
+  <body>
+{% block content %}
+
+{% endblock content %}
+    
+</div>
+<footer class="bg-dark text-white">
+  <div class="container py-4">
+    <div class="row py-5">
+      <div class="col-md-4 mb-3 mb-md-0">
+        <h6 class="text-uppercase mb-3">Apoio ao Cliente</h6>
+        <ul class="list-unstyled mb-0">
+          <li>
+            <a class="footer-link" href="#!">Ajuda &amp; Contacta-nos</a>
+          </li>
+          <li>
+            <a class="footer-link" href="#!">Termos &amp; Condições</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-md-4 mb-3 mb-md-0">
+        <h6 class="text-uppercase mb-3">A Empresa</h6>
+        <ul class="list-unstyled mb-0">
+          <li><a class="footer-link" href="{{url_for('who')}}">Quem somos</a></li>
+          <li><a class="footer-link" href="{{url_for('faq')}}">FAQ's</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="text-uppercase mb-3">Redes Sociais</h6>
+        <ul class="list-unstyled mb-0">
+          <li><a class="footer-link" href="https://www.facebook.com/profile.php?id=100054422383384" target="_blank" >Facebook</a></li>
+          <li><a class="footer-link" href="https://www.instagram.com/loja_presepios/" target="_blank">Instagram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-top pt-4" style="border-color: #1d1d1d !important">
+      <div class="row">
+        <div class="col-md-6 text-center text-md-start">
+          <p class="small text-muted mb-0">
+            &copy; 2022 Todos os direitos reservados.
+          </p>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <p class="small text-muted mb-0">Concebido por GSC</p>
+       
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- JavaScript files-->
+<script src="{{ url_for('static', filename='loja/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='loja/vendor/glightbox/js/glightbox.min.js') }}"></script>
+<script src="{{ url_for('static', filename='loja/vendor/nouislider/nouislider.min.js') }}"></script>
+<script src="{{ url_for('static', filename='loja/vendor/swiper/swiper-bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='loja/vendor/choices.js/public/assets/scripts/choices.min.js') }}"></script>
+<script src="{{ url_for('static', filename='loja/js/front.js') }}"></script>
+<script>
+  // ------------------------------------------------------- //
+  //   Inject SVG Sprite -
+  //   see more here
+  //   https://css-tricks.com/ajaxing-svg-sprite/
+  // ------------------------------------------------------ //
+  function injectSvgSprite(path) {
+    var ajax = new XMLHttpRequest();
+    ajax.open("GET", path, true);
+    ajax.send();
+    ajax.onload = function (e) {
+      var div = document.createElement("div");
+      div.className = "d-none";
+      div.innerHTML = ajax.responseText;
+      document.body.insertBefore(div, document.body.childNodes[0]);
+    };
+  }
+  // inject local SVG sprite (using only 'icons/orion-svg-sprite.svg' path)
+  injectSvgSprite(
+    "https://bootstraptemple.com/files/icons/orion-svg-sprite.svg"
+  );
+</script>
+<!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+<link
+  rel="stylesheet"
+  href="https://use.fontawesome.com/releases/v5.7.1/css/all.css"
+  integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
+  crossorigin="anonymous"
+/>
+</div>
+<script>
+  function delete_flash(flash){
+      $(flash).parent().remove()
+  }
+</script>
+
+ <script src="{{ url_for('static', filename='loja/js/carrinho.js' ) }}"></script>
+<script src="{{ url_for('static', filename = 'loja/js/checkforms.js')}}"></script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+{% extends '_base_index.html' %}
+{% block content %}
+    <div class="page-holder">
+      <header class="header bg-white">
+        <div class="container px-lg-3">
+          <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+            <a class="navbar-brand" href="#"
+              ><span class="fw-bold text-uppercase text-dark"
+                >Loja de Presépios</span
+              ></a
+            >
+            <button
+              class="navbar-toggler navbar-toggler-end"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+            <!-- Barra de navegação inclui links para diferentes páginas do site, como a página principal,
+              loja e página do perfil do utilizador. -->
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="nav-link active" href="{{ url_for('index') }}"
+                    >Início</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('store') }}">Loja</a>
+                </li>
+               <!-- Também há um link para a página de administrador, que só é exibido se a variável de sessão for "Admin". -->
+                {% if session['funcao'] == 'Admin'%}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('admin') }}"><i class="fa-solid fa-lock"></i> ADM</a>
+                </li>
+                {% endif %}
+
+                  </div>
+                <!-- A barra de navegação também inclui links para o carrinho de compras 
+                  e uma lista de itens favoritos do utilizador. -->
+              </ul>
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('cart') }}">
+                    <i class="fas fa-dolly-flatbed me-1 text-gray"></i
+                    >Carrinho<small class="text-gray fw-normal"> ({{items}})</small></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#!">
+                    <i class="far fa-heart me-1"></i
+                    ><small class="text-gray fw-normal"> (0)</small></a
+                  >
+                </li>
+                <!-- Para iniciar sessão e\ou sair da sessão, e são mostrados de acordo com o estado da sessão atual. -->
+                {% if not session %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('login')}}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>Iniciar
+                    Sessão</a
+                  >
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('profile', id=session['id'] ) }}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>{{session['nome'].title()}}
+                    </a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fa-solid text-gray fa-arrow-right-from-bracket"></i> Sair
+                    </a
+                  >
+                </li>
+                {% endif %}
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <!-- Para mostrar informações de cada um dos quatro produtos mais populares de uma lista de 
+        produtos bem como os detalhes do produto em cada iteração -->
+      {% for produto in produtos_top4 %}
+      <div class="modal fade" id="Modal{{produto['id']}}" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          
+          <div class="modal-content overflow-hidden border-0">
+            <button
+              class="btn-close p-4 position-absolute top-0 end-0 z-index-20 shadow-0"
+              type="button"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+            <!-- Utilizamos a sintaxe do Jinja para incluir informações específicas de cada produto e 
+              para apontar para arquivos estáticos, como a imagem do produto -->
+            <div class="modal-body p-0">
+              <div class="row align-items-stretch">
+               
+                <div class="col-lg-6 p-lg-0">
+                  
+                  <a
+                    class="glightbox product-view d-block h-100 bg-cover bg-center"
+                    style="background: url( static/{{ produto['imagem'] }} ); "
+                    href="{{ url_for('static', filename=produto['imagem'] )}}"
+                    
+                  ></a>
+                  
+                </div>
+                
+                <!-- Para mostrar a imagem do produto, uma avaliação em estrelas, o nome do produto, o preço, uma descrição 
+                e um botão para adicionar o produto ao carrinho de compras -->
+                <div class="col-lg-6">
+                  <div class="p-4 my-md-4">
+                   
+                    <h2 class="h4">{{produto['nome']}}</h2>
+                    <p class="text-muted">{{produto['preco']}} €</p>
+                    <p class="text-sm mb-4">
+                      {{produto['descricao']}}
+                    </p>
+                    <div class="row align-items-stretch mb-4 gx-0">
+                    
+                      <div class="col-sm-5">
+                        <button
+                          class="btn btn-dark btn-sm w-100 h-100 d-flex align-items-center justify-content-center px-0 atualizar-carrinho" data-produto="{{ produto['id'] }}" data-acao="adicionar"
+                          ><i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Carrinho</button>
+                      </div>
+                    </div>
+                    <!-- Para adicionar o produto a uma lista de favoritos do utilizador.  -->
+                    <a
+                      class="btn btn-link text-dark text-decoration-none p-0"
+                      href="#!"
+                      ><i class="far fa-heart me-2"></i>Adicionar aos
+                      Favoritos</a
+                    >
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+          </div>
+        
+        </div>
+      </div>
+      {% endfor %}
+      
+        </div> 
+        <!-- verifica se há mensagens "flash" disponíveis para serem exibidas. 
+          Se houver, o código verifica se a mensagem é de "sucesso" ou "erro", exibindo uma caixa de alerta 
+          correspondente com uma cor diferente colocando a mensagem respetiva dentro da caixa do alerta.-->
+      <div class="container">
+        <div style="padding-top:20px;">
+          {% if get_flashed_messages() %}
+            {% for message in get_flashed_messages() %}
+            {% if 'sucesso' in message  %}
+                <div  class=" alert alert-success"> 
+                    <i class="close icon alert-success" icon onclick="delete_flash(this)" >×&emsp;</i>  
+            {% else %}
+                <div  class="alert alert-danger"> 
+                    <i class="close icon alert-danger" icon onclick="delete_flash(this)" >×&emsp;</i>  
+            {% endif %}  
+            
+            {{ message }}
+            </div>
+            {% endfor %}
+          {% endif %}
+          </div>
+          <!-- Banner promocional, tem um fundo de imagem aplicado como um plano de fundo e inclui texto com informações sobre a promoção. 
+             Temos um botão que redireciona o utilizador para a página da loja. -->
+        <section
+          class="hero pb-3 bg-cover bg-center d-flex align-items-center"
+          style="background: url(static/loja/img/hero-banner-alt.jpg)"
+        >
+          <div class="container py-5">
+            <div class="row px-4 px-lg-5">
+              <div class="col-lg-6">
+                <p class="text-muted small text-uppercase mb-2">
+                  NATAL DE 2022
+                </p>
+                <h1 class="h2 text-uppercase mb-3">20% de desconto</h1>
+                <a class="btn btn-dark" href="{{url_for('store')}}">Pesquisar Produtos</a>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- Categorias dos produtos, com a imagem dos mesmos, imagens essas que estão no "static/loja/img".-->
+        <section class="pt-5">
+          <header class="text-center">
+            <p class="small text-muted small text-uppercase mb-1">
+              Coleções criadas com Amor
+            </p>
+            <h2 class="h5 text-uppercase mb-4">Algumas Categorias</h2>
+          </header>
+          <div class="row">
+            <div class="col-md-4">
+              <a class="category-item" href="{{url_for('store')}}"
+                ><img
+                  class="img-fluid"
+                  src="{{ url_for('static', filename='loja/img/cat-img-1.jpg') }}"
+                  alt=""
+                /><strong class="category-item-title">Troncos</strong></a
+              >
+            </div>
+            <div class="col-md-4">
+              <a class="category-item mb-4" href="{{url_for('store')}}"
+                ><img
+                  class="img-fluid"
+                  src="{{ url_for('static', filename='loja/img/cat-img-2.jpg') }}"
+                  alt=""
+                /><strong class="category-item-title">Velas</strong></a
+              ><a class="category-item" href="{{url_for('store')}}"
+                ><img
+                  class="img-fluid"
+                  src="{{ url_for('static', filename='loja/img/cat-img-3.jpg') }}"
+                  alt=""
+                /><strong class="category-item-title">Carros</strong></a
+              >
+            </div>
+            <div class="col-md-4">
+              <a class="category-item" href="{{url_for('store')}}"
+                ><img
+                  class="img-fluid"
+                  src="{{ url_for('static', filename='loja/img/cat-img-4.jpg') }}"
+                  alt=""
+                /><strong class="category-item-title">Mini Troncos</strong></a
+              >
+            </div>
+          </div>
+        </section>
+        <!-- Mostrar os produtos em destaque da lista "produtos_top4" e mostrar cada um deles. -->
+        <section class="py-5">
+          <header>
+            <p class="small text-muted small text-uppercase mb-1">
+              Conheça as nossa tendências
+            </p>
+            <h2 class="h5 text-uppercase mb-4">Produtos em Destaque</h2>
+          </header>
+          <div class="row">
+            <!-- Usamos um "for" para precorrer a lista de produtos em destaque "produtos_top4". -->
+            {% for produto in produtos_top4 %}
+            <!-- Lista de produtos da classe "product" com a respetiva imagem, titulo e preço.
+            Botões para adicionar os produtos, os favoritos, adicionar ao carrinho de compras e ver detalhes dos produtos. -->
+            <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="product text-center">
+                <div class="position-relative mb-3">
+                  <div class="badge text-white bg-"></div>
+                  <a class="d-block" href="{{ url_for('detail', id=produto['id']) }}"
+                    ><img style ="width: 350px; height: 350px;"
+                      class="img-fluid"
+                      src="{{ url_for('static', filename=produto['imagem']) }}"
+                      alt="..."
+                  /></a>
+                  <div class="product-overlay">
+                    <ul class="mb-0 list-inline">
+                      <li class="list-inline-item m-0 p-0">
+                        <a class="btn btn-sm btn-outline-dark" href="#!"
+                          ><i class="far fa-heart"></i
+                        ></a>
+                      </li>
+                      <li class="list-inline-item m-0 p-0">
+                        <button class="btn btn-sm btn-dark atualizar-carrinho"  data-produto="{{ produto['id'] }}" data-acao="adicionar"
+                        ><i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Carrinho</button>
+                      </li>
+                      <li class="list-inline-item me-0">
+                        <a
+                          class="btn btn-sm btn-outline-dark"
+                          href="#Modal{{ produto['id'] }}"
+                          data-bs-toggle="modal"
+                          ><i class="fas fa-expand"></i
+                        ></a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <h6>
+                  <a class="reset-anchor" href="{{ url_for('detail', id=produto['id']) }}"
+                    >{{produto['nome']}}</a
+                  >
+                </h6>
+                <p class="small text-muted">{{produto['preco']}} €</p>
+              </div>
+            </div>
+           {% endfor %}
+        </section>
+        <!-- Opções de envio e cupões de desconto com um icon no formato SVG-->
+        <section class="py-5 bg-light">
+          <div class="container">
+            <div class="row text-center gy-3">
+              <div class="col-lg-4">
+                <div class="d-inline-block">
+                  <div class="d-flex align-items-end">
+                    <svg class="svg-icon svg-icon-big svg-icon-light">
+                      <use xlink:href="#delivery-time-1"></use>
+                    </svg>
+                    <div class="text-start ms-3">
+                      <h6 class="text-uppercase mb-1">Envio Rápido</h6>
+                      <p class="text-sm mb-0 text-muted">
+                        Envio Rápido para todo o Mundo
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="d-inline-block">
+                  <div class="d-flex align-items-end">
+                    <svg class="svg-icon svg-icon-big svg-icon-light">
+                      <use xlink:href="#helpline-24h-1"></use>
+                    </svg>
+                    <div class="text-start ms-3">
+                      <h6 class="text-uppercase mb-1">Serviço 24h</h6>
+                      <p class="text-sm mb-0 text-muted">
+                        Em 24h a sua encomenda é expedida
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-4">
+                <div class="d-inline-block">
+                  <div class="d-flex align-items-end">
+                    <svg class="svg-icon svg-icon-big svg-icon-light">
+                      <use xlink:href="#label-tag-1"></use>
+                    </svg>
+                    <div class="text-start ms-3">
+                      <h6 class="text-uppercase mb-1">Cupões Desconto</h6>
+                      <p class="text-sm mb-0 text-muted">
+                        Oferta de cupões para os melhores clientes
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+{% endblock content %}

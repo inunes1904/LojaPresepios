@@ -1,0 +1,151 @@
+<!--HTML com um bloco de código Jinja que é uma extensão do HTML '_base_index.html'. O bloco de código Jinja 'content'
+   é usado para substituir o conteúdo do modelo base. A página inclui um cabeçalho com uma barra de navegação, que 
+   inclui links para a página inicial, a da loja e seção de administrador (se a sessão atual for um administrador). 
+   Também existem links para o carrinho de compras e início de sessão/perfil do utilizador (dependendo se o mesmo 
+   está conectado ou não). O código também inclui uma seção de serviços e uma seção de rodapé. Há também um bloco 
+   de código Jinja que exibe mensagens flash, se elas existirem.-->
+{% extends '_base_index.html' %}
+{% block content %}
+    <div class="page-holder">
+      <!-- navbar-->
+      <header class="header bg-white">
+        <div class="container px-lg-3">
+          <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+            <a class="navbar-brand" href="#"
+              ><span class="fw-bold text-uppercase text-dark"
+                >Loja de Presépios</span
+              ></a
+            >
+            <button
+              class="navbar-toggler navbar-toggler-end"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="{{ url_for('index') }}"
+                    >Início</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="{{ url_for('store') }}">Loja</a>
+                </li>
+                {% if session['funcao'] == 'Admin'%}
+                <li class="nav-item">
+                  <!-- Link--><a class="nav-link" href="{{ url_for('admin') }}"><i class="fa-solid fa-lock"></i> ADM</a>
+                </li>
+                {% endif %}
+                
+                  </div>
+                </li>
+              </ul>
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('cart') }}">
+                    <i class="fas fa-dolly-flatbed me-1 text-gray"></i
+                    >Carrinho<small class="text-gray fw-normal"> ({{items}})</small></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#!">
+                    <i class="far fa-heart me-1"></i
+                    ><small class="text-gray fw-normal"> (0)</small></a
+                  >
+                </li>
+               
+                {% if not session %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('login')}}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>Iniciar
+                    Sessão</a
+                  >
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link active" href="{{ url_for('profile', id=session['id'] ) }}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>{{session['nome'].title()}}
+                    </a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fa-solid text-gray fa-arrow-right-from-bracket"></i> Sair
+                    </a
+                  >
+                </li>
+                {% endif %}
+
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>
+      <!--  Modal -->
+     
+           
+        </section>
+        <!-- SERVICES-->
+        <div style="padding-top:20px;">
+            {% if get_flashed_messages() %}
+              {% for message in get_flashed_messages() %}
+              {% if 'sucesso' in message  %}
+                  <div  class=" alert alert-success"> 
+                      <i class="close icon alert-success" icon onclick="delete_flash(this)" >×&emsp;</i>  
+              {% else %}
+                  <div  class="alert alert-danger"> 
+                      <i class="close icon alert-danger" icon onclick="delete_flash(this)" >×&emsp;</i>  
+              {% endif %}  
+              
+              {{ message }}
+              </div>
+              {% endfor %}
+            {% endif %}
+            </div> 
+            
+        <section class="py-5 bg-light">
+         <div style="margin: 50px 350px 100px 350px;">
+            <h2>Perguntas Frequentes</h2>
+            <br>
+            <hr>
+            <h5>P: Onde posso adquirir os vossos produtos?</h5>
+            <p style="font-size:1.2rem;">
+              R: Poderá adquirir qualquer produto através do nosso site, disponível 24h por dia, 
+              todo o ano, através do nosso e-mail ou das nossas redes sociais.
+            </p>
+            <h5>P: São acrescidos portes de envio nas compras efetuadas?</h5>
+            <p style="font-size:1.2rem;">
+              R: Em todas as compras, independentemente do canal, são acrescidos portes de envio 
+              e taxas alfandegárias, se aplicáveis, em encomendas entregues fora de Portugal.
+            </p>
+            <h5>P: Após finalização da compra de um produto, quanto tempo demoro a receber a minha encomenda.</h5>
+            <p style="font-size:1.2rem;">
+              R: Em média, todas as encomendas são entregues no prazo de 3 dias úteis, exceto rutura de stock 
+              ou encomenda personalizada.
+            </p>
+            <h5>P: Encomendei um produto e efetuei o pagamento, mas ainda não recebi a encomenda.</h5>
+            <p style="font-size:1.2rem;">
+              R: Em caso de demora na entrega do(s) produto(s), poderá contactar-nos através 
+              do nosso e-mail ou das nossas redes sociais.
+            </p>
+            <h5>P: Recebi um produto, mas o mesmo vinha danificado.</h5>
+            <p style="font-size:1.2rem;">
+              R: Caso receba um produto danificado, entre em contacto connosco, através do nosso e-mail
+              ou redes sociais, de forma a resolvermos a situação.
+            </p>
+            <h5>P: Caso não goste do produto que adquiri, posso devolvê-lo.</h5>
+            <p style="font-size:1.2rem;">
+              R: Após finalizada a compra, não aceitamos devolução de qualquer produto.
+            </p>
+
+        </div>
+
+        </section>
+        <!-- NEWSLETTER-->
+{% endblock content %}

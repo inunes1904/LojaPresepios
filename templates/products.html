@@ -1,0 +1,84 @@
+{% extends '_main.html' %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">Produtos</h1>
+    <!-- verifica se há mensagens "flash" disponíveis para serem exibidas. 
+    Se houver, o código verifica se a mensagem é de "sucesso" ou "erro", exibindo uma caixa de alerta 
+    correspondente com uma cor diferente colocando a mensagem respetiva dentro da caixa do alerta.-->
+    {% if get_flashed_messages() %}
+
+        {% for message in get_flashed_messages() %}
+        {% if 'sucesso' in message  %}
+            <div class="alert alert-success"> 
+                <i class="close icon alert-success" icon onclick="delete_flash(this)" >×&emsp;</i>  
+        {% else %}
+            <div class="alert alert-danger"> 
+                <i class="close icon alert-danger" icon onclick="delete_flash(this)" >×&emsp;</i>  
+        {% endif %}  
+        
+        {{ message }}
+        </div>
+        {% endfor %}
+{% endif %}
+    <!-- Botão para adicionar produtos -->
+    <div  style="padding-bottom: 20px;">
+        <a href="{{ url_for('add_produto') }}" type="button" class="btn btn-primary">
+            Adicionar Produto
+          </a>
+    </div>
+    <!-- Lista de produtos, com as opções para o utilizador editar ou excluir um determinado produto. -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Lista de Produtos</h6>
+        </div>
+        <div class="card-body">
+         
+            <table id="myTable" class="display" >
+                <thead>
+                    <tr>
+                        <th>Imagem</th>
+                        <th>Nome</th>
+                        <th>Descricao</th>
+                        <th>Preço</th>
+                        <th>Stock</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+          {% for produto in produtos %}
+                    <tr>
+                        <td><img style="height:100px; width:100px;  border-radius: 25%;" src="{{ url_for('static', filename = produto['imagem'] ) }}"></td>
+                        <td>{{produto['nome']}}</td>
+                        <td>{{produto['descricao']}}</td>
+                        <td>{{produto['preco']}}</td>
+                        <td>{{produto['unidades']}}</td>
+                        <td>
+                            <a href="{{ url_for('edit_produto', id=produto['id'] ) }}"><i class="btn btn-primary fa-solid fa-pen-to-square"></i></a> 
+                            <a href="{{ url_for('delete_produto', id=produto['id'] ) }}"><i class="btn btn-primary fa-solid fa-trash"></i></a> 
+                        </td>
+                    </tr>
+          {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                      <th>Imagem</th>
+                      <th>Nome</th>
+                      <th>Descricao</th>
+                      <th>Preço</th>
+                      <th>Stock</th>
+                      <th>Ações</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Opção de fechar a mensagem de alerta através do "X"-->
+<script>
+    function delete_flash(flash){
+        $(flash).parent().remove()
+    }
+</script>
+{% endblock content %}

@@ -1,0 +1,198 @@
+{% extends '_base_index.html' %}
+{% block content %}
+    <div class="page-holder">
+      <!-- Criação da navbar e links para diferentes páginas da loja, como "Início" e "Loja". 
+        O navbar também inclui um botão de menu tipo hambúrguer que é ser usado para expandir e recolapsar o menu em dispositivos móveis. 
+        O navbar inclui links para o carrinho de compras e a lista de favoritos da loja, bem como opções de login/logout e acesso ao perfil do utilizador.-->
+      <header class="header bg-white">
+        <div class="container px-lg-3">
+          <!-- A classe "navbar-expand-lg" indica que o navbar deve ser expandido em monitores maiores e o 
+            botão de menu hambúrguer deve ser mostrado em monitores menores ou dispositivos móveis --> 
+          <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+            <a class="navbar-brand" href="#"
+              ><span class="fw-bold text-uppercase text-dark"
+                >Loja de Presépios</span
+              ></a
+            >
+            <button
+              class="navbar-toggler navbar-toggler-end"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav me-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('index') }}"
+                    >Início</a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('store') }}">Loja</a>
+                </li>
+
+                  </div>
+                </li>
+              </ul>
+              <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('cart') }}">
+                    <i class="fas fa-dolly-flatbed me-1 text-gray"></i
+                    >Carrinho<small class="text-gray fw-normal"> ({{items}})</small></a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#!">
+                    <i class="far fa-heart me-1"></i
+                    ><small class="text-gray fw-normal"> (0)</small></a
+                  >
+                </li>
+               
+                {% if not session %}
+                <li class="nav-item">
+                  <a class="nav-link" href="{{url_for('login')}}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>Iniciar
+                    Sessão</a
+                  >
+                </li>
+                {% else %}
+                <li class="nav-item">
+                  <a class="nav-link active" href="{{ url_for('profile', id=session['id'] ) }}">
+                    <i class="fas fa-user me-1 text-gray fw-normal"></i>{{session['nome'].title()}}
+                    </a
+                  >
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{{ url_for('logout') }}">
+                    <i class="fa-solid text-gray fa-arrow-right-from-bracket"></i> Sair
+                    </a
+                  >
+                </li>
+                {% endif %}
+
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </header>   
+           
+        </section>
+        <!-- verifica se há mensagens "flash" disponíveis para serem exibidas. 
+          Se houver, o código verifica se a mensagem é de "sucesso" ou "erro", exibindo uma caixa de alerta correspondente 
+          com uma cor diferente colocando a mensagem respetiva dentro da caixa do alerta.-->
+        <div style="padding-top:20px;">
+            {% if get_flashed_messages() %}
+              {% for message in get_flashed_messages() %}
+              {% if 'sucesso' in message  %}
+                  <div  class=" alert alert-success"> 
+                      <i class="close icon alert-success" icon onclick="delete_flash(this)" >×&emsp;</i>  
+              {% else %}
+                  <div  class="alert alert-danger"> 
+                      <i class="close icon alert-danger" icon onclick="delete_flash(this)" >×&emsp;</i>  
+              {% endif %}  
+              
+              {{ message }}
+              </div>
+              {% endfor %}
+            {% endif %}
+            </div> 
+            
+        <section class="py-5 bg-light">
+         
+            <section class="py-5">
+                <!-- Morada de Faturação-->
+                <!-- Template usando o Jinja: A página contém um formulário HTML com vários campos de input para entrada de dados pelo utilizador.
+                Alguns dos campos de input possuem dados pré-preenchido com valores do utilizador (objeto "utilizador")
+                e usamos uma condição(utilizando o Jinja) para preencher os valores que estão a null (não preenchidos no objeto utilizador).
+                
+                O formulário utiliza o método POST para o URL respectivo do formulário.
+                -->
+                <h2 class="h5 text-uppercase mb-4" style="margin-left: 50px;margin-right: 50px;">Editar Perfil</h2>
+                <div class="row">
+                  <div class="col-lg-8" style="width:100%">
+                    <form action="{{ url_for('profile', id=utilizador[0]) }}" method="POST">
+                      <div class="row gy-3" style="margin-left: 50px;margin-right: 50px;">
+                        <div class="col-lg-6">
+                          <label class="form-label text-sm text-uppercase" for="nome">Nome </label>
+                          <input class="form-control form-control-lg" type="text" id="nome" name="nome" value="{{utilizador[2].title()}}" placeholder="Insira nome completo">
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label text-sm text-uppercase" for="email">Email </label>
+                          <input class="form-control form-control-lg" type="email" id="email" name="email" value="{{utilizador[1]}}" placeholder="ex: batatas@ldp.pt">
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label text-sm text-uppercase" for="password">Password </label>
+                            <input class="form-control form-control-lg" type="password" id="password" name="password" value="{{utilizador[7]}}" placeholder="ex: batatas@ldp.pt">
+                          </div>
+                        <div class="col-lg-6">
+                          <label class="form-label text-sm text-uppercase" for="contacto">Número de Contacto </label>
+                          {% if utilizador[9] != None %}
+                          <input class="form-control form-control-lg" type="tel" id="contacto" name="contacto" value="{{utilizador[9]}}" placeholder="ex: +351 213 333 333">
+                          {% else %}
+                          <input class="form-control form-control-lg" type="tel" id="contacto" name="contacto" placeholder="ex: +351 213 333 333">
+                          {% endif %}
+                        </div>
+                        
+                        <div class="col-lg-12">
+                          <label class="form-label text-sm text-uppercase" for="morada">Morada linha 1</label>
+                          {% if utilizador[9] != None %}
+                          <input class="form-control form-control-lg" type="text" id="morada" name="morada" value="{{utilizador[5]}}" placeholder="Nome da Rua, número da porta, etc..">
+                          {% else %}
+                          <input class="form-control form-control-lg" type="text" id="morada" name="morada" placeholder="Nome da Rua, número da porta, etc..">          
+                          {% endif %}
+                        </div>
+                        <div class="col-lg-12">
+                          <label class="form-label text-sm text-uppercase" for="morada2">Morada linha 2</label>
+                          {% if utilizador[10] != None %}
+                          <input class="form-control form-control-lg" type="text" id="morada2" name="morada2" value="{{utilizador[10]}}" placeholder="Apartamento, Suite, Moradia, etc (opcional)">
+                          {% else %}
+                          <input class="form-control form-control-lg" type="text" id="morada2" name="morada2" placeholder="Apartamento, Suite, Moradia, etc (opcional)">
+                          {% endif %}
+                        </div>
+                        
+                        <div class="col-lg-6">
+                          <label class="form-label text-sm text-uppercase" for="cidade">Cidade</label>
+                          {% if utilizador[10] != None %}
+                          <input class="form-control form-control-lg" placeholder="Nome Cidade" type="text" id="cidade" name="cidade" value="{{utilizador[3]}}">
+                          {% else %}
+                          <input class="form-control form-control-lg" placeholder="Nome Cidade" type="text" id="cidade" name="cidade">
+                          {% endif %}
+                        </div>
+                        <div class="col-lg-6">
+                          <label class="form-label text-sm text-uppercase" for="localidade">Localidade </label>
+                          {% if utilizador[4] != None %}
+                          <input class="form-control form-control-lg" placeholder="Nome Localidade" type="text" id="localidade" name="localidade" value="{{utilizador[4]}}">
+                          {% else %}
+                          <input class="form-control form-control-lg" placeholder="Nome Localidade" type="text" id="localidade" name="localidade">
+                          {% endif %}
+                        </div>
+                        <div class="col-lg-6">
+                            <label class="form-label text-sm text-uppercase" for="cod-postal">Código Postal </label>
+                            {% if utilizador[6] != None %}
+                            <input class="form-control form-control-lg" type="text" placeholder="Código Postal (ex: 2222-222)"  id="cod-postal" name="cod-postal" value="{{utilizador[6]}}">
+                            {% else %}
+                            <input class="form-control form-control-lg" type="text" placeholder="Código Postal (ex: 2222-222)"  id="cod-postal" name="cod-postal" >
+                            {% endif %}
+                          </div>
+                        <div class="col-lg-6">
+                         
+                        </div>
+                     
+                        <div class="col-lg-12 form-group">
+                          <button class="btn btn-dark" type="submit">Atualizar Perfil</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                
+                </div>
+              </section>
+
+
+        </section>
+{% endblock content %}

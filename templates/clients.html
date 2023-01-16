@@ -1,0 +1,331 @@
+<!--Extensão do HTML "_main.html". É definido um bloco de conteúdo para ser inserido. O conteúdo inclui um título "Clientes" e, se 
+  houver mensagens flash, elas são exibidas na página. Em seguida, são exibidos três cards com informações sobre o melhor cliente, 
+  incluindo o valor médio mensal que ele gasta, o valor total anual que ele gastou e o seu nome. Depois, é exibido um gráfico, em 
+  formato circular, com a percentagem de compras feitas por cada cliente e um gráfico de barras que mostra o valor total gasto por 
+  cada cliente. Por fim, é exibida uma tabela com as informações sobre todos os clientes, incluindo o nome, o endereço de e-mail,
+   o número de telefone e o valor total gasto. Há também um botão para adicionar um novo cliente e um formulário de pesquisa para
+   filtrar os clientes exibidos na tabela.-->
+{% extends '_main.html' %} {% block content %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+  <!-- Page Heading -->
+  <h1 class="h3 mb-2 text-gray-800">Clientes</h1>
+  {% if get_flashed_messages() %} {% for message in get_flashed_messages() %} {%
+  if 'sucesso' in message %}
+  <div class="alert alert-success">
+    <i class="close icon alert-success" icon onclick="delete_flash(this)"
+      >×&emsp;</i
+    >
+    {% else %}
+    <div class="alert alert-danger">
+      <i class="close icon alert-danger" icon onclick="delete_flash(this)"
+        >×&emsp;</i
+      >
+      {% endif %} {{ message }}
+    </div>
+    {% endfor %} {% endif %}
+    <div class="row">
+      <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                >
+                  Média Mensal do melhor cliente
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {% if top3_gasto[0] %}
+                  {{ "%.2f"|format(top3_gasto[0]/12) }} €
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-euro-sign fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-dark shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-dark text-uppercase mb-1"
+                >
+                  Valor (Anual) Melhor Cliente
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {{ top3_gasto[0]}} €
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fa-solid fa-chart-simple fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-4 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div
+                  class="text-xs font-weight-bold text-primary text-uppercase mb-1"
+                >
+                  Melhor Cliente
+                </div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">
+                  {{top1}}
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fa-solid fa-star fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Donut Chart -->
+      <div class="col-xl-6 col-lg-5">
+        <div class="card shadow mb-4">
+          <!-- Card Header - Dropdown -->
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+              Clientes Registados VS Não Registados
+            </h6>
+          </div>
+          <!-- Card Body -->
+          <div class="card-body">
+            <div class="chart-pie pt-4">
+              <div class="chartjs-size-monitor">
+                <div class="chartjs-size-monitor-expand">
+                  <div class=""></div>
+                </div>
+                <div class="chartjs-size-monitor-shrink">
+                  <div class=""></div>
+                </div>
+              </div>
+              <canvas
+                id="donutChart2"
+                width="972"
+                height="306"
+                style="display: block; height: 253px; width: 486px"
+                class="chartjs-render-monitor"
+              ></canvas>
+            </div>
+            <hr />
+          </div>
+        </div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="col-xl-6 col-lg-5">
+        <div class="card shadow mb-4">
+          <!-- Card Header - Dropdown -->
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Top 3 Clientes</h6>
+          </div>
+          <!-- Card Body -->
+          <div class="card-body">
+            <div class="chart-pie pt-4">
+              <div class="chartjs-size-monitor">
+                <div class="chartjs-size-monitor-expand">
+                  <div class=""></div>
+                </div>
+                <div class="chartjs-size-monitor-shrink">
+                  <div class=""></div>
+                </div>
+              </div>
+              <canvas
+                id="donutChart"
+                width="972"
+                height="306"
+                style="display: block; height: 253px; width: 486px"
+                class="chartjs-render-monitor"
+              ></canvas>
+            </div>
+            <hr />
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-12 col-lg-7">
+        <!-- Line Chart -->
+        <div class="card shadow mb-4">
+          <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">
+              Top 3 Clientes Ano
+            </h6>
+          </div>
+          <div class="card-body" style="height: 540px">
+            <div class="chart-area">
+              <div class="chartjs-size-monitor">
+                <div class="chartjs-size-monitor-expand">
+                  <div class=""></div>
+                </div>
+                <div class="chartjs-size-monitor-shrink">
+                  <div class=""></div>
+                </div>
+              </div>
+              <canvas
+                id="lineChart"
+                style="display: block; height: 320px; width: 1039px"
+                width="2078"
+                height="640"
+                class="chartjs-render-monitor"
+              ></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar Chart -->
+    </div>
+  </div>
+</div>
+
+<!--Função para remover o elemento flash.-->
+<script>
+  function delete_flash(flash) {
+    $(flash).parent().remove();
+  }
+</script>
+
+<!--Criação do gráfico de linhas, utilizando a biblioteca Chart.js. O gráfico é criado quando o evento "DOMContentLoaded"
+   é lançado, o que significa que o script é executado assim que o conteúdo HTML é totalmente carregado pelo navegador. 
+   O gráfico é criado a partir de um objeto JSON chamado "clientes" e uma string chamada "top3_nomes". A string "top3_nomes"
+    é dividida numa lista de nomes utilizando o método "split" e armazenada na variável "lista_nomes". Uma lista com os meses
+     do ano é criada e utilizada como rótulos para o gráfico. Em seguida, são criados três conjuntos de dados, um para cada 
+     nome na lista "lista_nomes". Cada conjunto de dados contém as vendas do cliente correspondente, como especificado no 
+     objeto "clientes". As opções do gráfico incluem uma escala "y" que começa no zero.-->
+<script>
+  var bgjson = {{clientes|tojson|safe}}
+  var clientes = JSON.parse(bgjson)
+  var nomes = '{{top3_nomes}}'
+  var lista_nomes = nomes.split('/');
+
+
+  var meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho',
+             'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+      new Chart(document.querySelector('#lineChart'), {
+        type: 'line',
+        data: {
+          labels: meses,
+          datasets: [{
+            label: lista_nomes[0] + ' Vendas €',
+            data: clientes[lista_nomes[0]]['vendas'],
+            fill: false,
+            borderColor: 'rgba(153, 0, 0, 0.7)',
+            tension: 0.1
+          },{
+            label: lista_nomes[1]+' Vendas €',
+            data: clientes[lista_nomes[1]]['vendas'],
+            fill: false,
+            borderColor: 'rgba(153, 0, 0, 0.5)',
+            tension: 0.1
+          },
+          {
+            label: lista_nomes[2]+' Vendas €',
+            data: clientes[lista_nomes[2]]['vendas'],
+            fill: false,
+            borderColor: 'rgba(153, 0, 0, 0.2)',
+            tension: 0.1
+          },
+        ]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+</script>
+
+<!--Criação de um gráfico circular que utiliza a biblioteca Chart.js. O gráfico é criado quando o evento "DOMContentLoaded" é 
+  lançado, o que significa que o script é executado assim que o conteúdo HTML é totalmente carregado pelo navegador. O gráfico
+   é criado a partir de uma string chamada "top3_nomes", que é dividida numa lista de nomes utilizando o método "split" e 
+   armazenada na variável "lista_nomes". Também é utilizada uma variável chamada "top3_gasto" como os dados para o gráfico.
+   O gráfico é circular com três seções, uma para cada nome na lista "lista_nomes". As opções do gráfico incluem uma escala 
+   "y" que começa no zero. As cores de cada seção são especificadas utilizando a propriedade "backgroundColor".-->
+<script>
+  var nomes = '{{top3_nomes}}'
+  var lista_nomes = nomes.split('/');
+      document.addEventListener("DOMContentLoaded", () => {
+        new Chart(document.querySelector('#donutChart'), {
+          type: 'pie',
+          data: {
+            labels: lista_nomes,
+            datasets: [{
+              data: {{ top3_gasto }},
+              fill: false,
+              backgroundColor:['rgba(153, 0, 0, 0.7)','rgba(153, 0, 0, 0.5)','rgba(153, 0, 0, 0.2)'],
+              borderColor: 'rgb(153, 0, 0)',
+              tension: 0.1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+      });
+</script>
+
+<!--Criação de um gráfico de barras utilizando a biblioteca Chart.js. O gráfico é criado quando o evento "DOMContentLoaded" 
+  é lançado, o que significa que o script é executado assim que o conteúdo HTML é totalmente carregado pelo navegador. O 
+  gráfico é criado com um único conjunto de rótulos, "Clientes". Existem dois conjuntos de dados no gráfico, um com a label
+   "Clientes Registados" e outro com a label "Clientes Não Registados". Cada conjunto de dados contém um único valor, 
+   respectivamente armazenados nas variáveis "perc_users" e "perc_naousers". As opções do gráfico incluem uma escala 
+   "y" que começa no zero. As cores de cada barra são especificadas utilizando a propriedade "backgroundColor".-->
+<script>
+
+  document.addEventListener("DOMContentLoaded", () => {
+    new Chart(document.querySelector('#donutChart2'), {
+      type: 'bar',
+      data: {
+        labels: ['% Clientes'],
+        datasets: [{
+          label: ['% Clientes Registados'],
+          data: [ {{perc_users}} ],
+          fill: false,
+          backgroundColor:['rgba(153, 0, 0)',],
+          borderColor: 'rgb(153, 0, 0)',
+          tension: 0.1
+        },
+        {
+          label: ['% Clientes Não Registados'],
+          data: [ {{perc_naousers}} ],
+          fill: false,
+          backgroundColor:['rgba(153, 0, 0, 0.7)'],
+          borderColor: 'rgb(153, 0, 0)',
+          tension: 0.1
+        }],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  });
+</script>
+{% endblock content %}

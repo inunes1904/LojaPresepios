@@ -1,0 +1,18 @@
+.warningIcon{
+    color: red
+  }
+  .warningIcon:hover{
+    color: rgb(255, 144, 144)
+  }
+  
+  .btn-trash:hover{
+    color: rgb(255, 95, 95)
+  }
+
+  .btn-trash{
+    color: #6c757d;
+  }
+
+  .hidden{
+    display: none;
+  }
