@@ -28,6 +28,6 @@ Lista de Todos:
     14 - Modelo de Base de dados - done
     15 - Criação de Avatar - done
     16 - Evitar que Utilizador nao logado aceda ao Chat - done
-    20 - Area Administrativa
-    21 - Adicionar/Editar/Remover Produtos
-    22 - Visualização Gráfica de Vendas/Clientes
+    20 - Area Administrativa - done
+    21 - Adicionar/Editar/Remover Produtos - done
+    22 - Visualização Gráfica de Vendas/Clientes - done
